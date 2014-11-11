@@ -52,3 +52,11 @@ Yes, the only person who can see all the ideas is you. This way you can collect 
 
 Yes, you will send an email to the user about the idea status. If you use an idea in the article, please free to provide a link to that article and in most cases the idea author will promote your article for more visibility!
 
+== Screenshots ==
+
+1. Approving Brainstorm Idea.
+
+2. MyBlogU plugin settings page.
+
+3. MyBlogU TODO witget.
+
