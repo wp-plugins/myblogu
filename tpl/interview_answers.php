@@ -26,6 +26,17 @@
     {
         echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.interviewPreviewCode('.$interview['id'].')">Preview</button>';
     }
+
+    if($interview['status'] == 2)
+    {
+        echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.interviewCreatePost('.$interview['id'].')">Create Draft Post</button>';
+    }    
+
+    if(!empty($interview['post_id']) && ($interview['status'] == 2 || $interview['status'] == 3))
+    {
+        echo '<a href="'.admin_url('post.php?post='.$interview['post_id'].'&action=edit').'"  target="_blank" class="button button-primary mbu-dlg-button">Edit Post</a>';
+    }
+
 ?>
 </p>
 

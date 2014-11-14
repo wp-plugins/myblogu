@@ -31,10 +31,10 @@ if ( is_admin() ){
 
         $main_msg = (($num_new_ideas + $num_new_answers + $num_todo) > 0) ? '<span class="update-plugins"><span class="plugin-count">'.($num_new_ideas + $num_new_answers + $num_todo).'</span></span>' : '';
         
-	add_menu_page(MBU_DISPLAY_NAME, MBU_DISPLAY_NAME.' '.$main_msg, MBU_REQUIRED_CAPABILITY, 'mbu-main-menu', 'mbu_settings_page'); 
+	add_menu_page(MBU_DISPLAY_NAME, MBU_DISPLAY_NAME.' '.$main_msg, MBU_REQUIRED_CAPABILITY, 'mbu-main-menu', 'mbu_settings_page', MBU_IMGS.'/icon.png'); 
 	add_submenu_page( 'mbu-main-menu',  MBU_DISPLAY_NAME, 'Settings '.$num_todo_msg, MBU_REQUIRED_CAPABILITY, 'mbu-main-menu', 'mbu_settings_page');        
         add_submenu_page( 'mbu-main-menu',  'Brainstorms', 'Brainstorms '.$num_new_ideas_msg, MBU_REQUIRED_CAPABILITY, 'mbu_brainstorms', 'mbu_brainstorms_page');
-//        add_submenu_page( 'mbu-main-menu',  'Interviews', 'Interviews '.$num_new_answers_msg, MBU_REQUIRED_CAPABILITY, 'mbu_interviews', 'mbu_interviews_page');
+        add_submenu_page( 'mbu-main-menu',  'Interviews', 'Interviews '.$num_new_answers_msg, MBU_REQUIRED_CAPABILITY, 'mbu_interviews', 'mbu_interviews_page');
         add_submenu_page( 'mbu-main-menu',  'MBU Alerts', '', MBU_REQUIRED_CAPABILITY, 'mbu_pm', 'mbu_pm_page');
 
 
@@ -301,3 +301,135 @@ function mbuGetIdeaDlg(){
 }
 
 add_action('wp_ajax_mbuGetIdeaDlg', 'mbuGetIdeaDlg');
+
+
+    /*
+     *  создает пост на основе интервью
+     */
+function mbuPublishInterviewAjax(){
+
+    global $user_ID;
+    
+    header ( 'Content-type: application/json' );
+    if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
+        return;
+    }
+
+    $id_interview = isset($_REQUEST['id_interview']) ? intval($_REQUEST['id_interview']) : 0;
+
+    if(empty($id_interview))
+    {
+        $res['err'] = 'Bad Request';
+        echo json_encode($res);
+        exit();        
+    }
+    
+    $old_post = mbuGetPostByInterview($id_interview);
+    if(is_object($old_post))
+    {
+	$message = sprintf("Post already exists <a target='_new' href='%s'>here</a>", admin_url('post.php?post='.$old_post->ID.'&action=edit'));
+        $res['msg'] = $message;
+        echo json_encode($res);
+        exit();        
+    }
+    $gen_content_table = isset($_REQUEST['gen_content_table']) ? intval($_REQUEST['gen_content_table']) : 0;
+    $gen_author_info   = isset($_REQUEST['gen_author_info']) ? intval($_REQUEST['gen_author_info']) : 0;
+   
+    $data = array(
+                'action' => 'get_code', 
+                'id_interview' => $id_interview, 
+                'gen_content_table' => $gen_content_table, 
+                'gen_author_info' => $gen_author_info,
+                'preview' => 1,
+                );
+    $ret = mbu_api(MBU_API_BASE_URL.'/interview', $data);
+    if(is_string($ret))
+    {
+        $res['err'] = $ret;
+        echo json_encode($res);
+        exit();                
+    }
+    if($ret['interview_status'] != 2)
+    {
+        $res['err'] = 'Bad Interview Status';
+        echo json_encode($res);
+        exit();                
+    }
+    
+    $code = str_replace('&nbsp;', ' ', $ret['code']);
+    //$code = str_replace("\xA0", ' ', html_entity_decode($code));
+    $new_post = array(
+            'post_title' => $ret['title'],
+            'post_content' => $code,
+            'post_status' => 'draft',
+            'post_date' => date('Y-m-d H:i:s'),
+            'post_author' => $user_ID,
+            'post_type' => 'post',
+            'post_category' => array(0),
+            'filter' => true
+    );
+    
+    $post_id = wp_insert_post($new_post);
+		
+    if (!empty($post_id))
+    {
+        add_post_meta($post_id, 'mbu_interview_id', $id_interview, true);
+	$message = sprintf("Post Has Been Inserted Into Wordpress, <a target='_new' href='%s'>click here</a> to edit your post", admin_url('post.php?post='.$post_id.'&action=edit'));
+        $res['msg'] = $message;
+        echo json_encode($res);
+        exit();                
+        
+    } else {
+	// inserting post failed -- opps
+        $res['err'] = "Inserting Post Into WordPress Failed";
+        echo json_encode($res);
+        exit();                
+    }
+}
+
+add_action('wp_ajax_mbuPublishInterviewAjax', 'mbuPublishInterviewAjax');
+
+
+    /* post status handling */
+    
+function mbu_draft_to_publish($post)
+{
+	// если пост создан на основе интервью, то при публикации нужно уведомить MBU
+    $id_interview = get_post_meta($post->ID, 'mbu_interview_id', true);
+    
+    if(!empty($id_interview))
+    {
+        $data = array(
+            'id_interview' => $id_interview,
+            'url' => $post->guid,
+            'action' => 'save_url',
+        );
+        $res = mbu_api(MBU_API_BASE_URL.'/interview', $data, true);
+    }
+}
+
+add_action( 'draft_to_publish', 'mbu_draft_to_publish' );
+
+function mbu_draft_to_future($post)
+{
+	// если пост создан на основе интервью, то при публикации нужно уведомить MBU
+    $id_interview = get_post_meta($post->ID, 'mbu_interview_id', true);
+    if(!empty($id_interview))
+    {
+	$date_info = explode(" ", $post->post_date);
+	$shedule_date = $date_info[0];	
+        if(!empty($shedule_date))
+	{
+            $data = array(
+                'id_interview' => $id_interview,
+                'url' => $post->guid,
+                'scheduled' => $shedule_date,
+                'action' => 'save_url',                
+            );
+        
+            $res = mbu_api(MBU_API_BASE_URL.'/interview', $data, true);            
+        }        
+    }
+}
+
+add_action( 'draft_to_future', 'mbu_draft_to_future' );

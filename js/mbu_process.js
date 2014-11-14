@@ -953,6 +953,8 @@ interviewPreviewCode : function(id_interview)
 
 onInterviewPreviewCode : function()
 {
+    jQuery('#mbu-interview-preview-dlg #mbu-interview-text').html('');
+    jQuery('#mbu-interview-preview-dlg #mbu-interview-title').text('');
     var p = {
         'id_interview' : jQuery('#mbu-interview-code-options-dlg #mbu-id-interview').val(),
         'preview' : 1,
@@ -965,7 +967,27 @@ onInterviewPreviewCode : function()
     mbu.api_proxy('interview', p, function(ret){
                                mbu.dlg('mbu-interview-preview-dlg');
                                jQuery('#mbu-interview-preview-dlg #mbu-interview-text').html(ret.code);
+                               jQuery('#mbu-interview-preview-dlg #mbu-interview-title').text(ret.title);
                           });    
+},
+
+interviewCreatePost : function(id_interview)
+{
+    mbu.interviewGetCodeOptions(id_interview, mbu.onInterviewCreatePost);
+},
+
+onInterviewCreatePost : function()
+{
+    var id_interview = jQuery('#mbu-interview-code-options-dlg #mbu-id-interview').val();
+    var gen_content_table = jQuery('#mbu-interview-code-options-dlg #gen-content-table:checked').length;
+    var gen_author_info = jQuery('#mbu-interview-code-options-dlg #gen-author-info:checked').length;
+
+    mbu.setButtonWait(jQuery('#mbu-interview-code-options-dlg #mbu-ok-button'));
+    
+    mbu.ajax(mbu_script_data['ajaxurl'], 'action=mbuPublishInterviewAjax&gen_author_info='+gen_author_info+'&gen_content_table='+gen_content_table+'&id_interview='+id_interview, 
+        function(data){
+            mbu.showMessage(data.msg);
+        });    
 },
 
 };

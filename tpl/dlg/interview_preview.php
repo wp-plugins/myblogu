@@ -1,5 +1,5 @@
-<div class="mbu-dlg" id="mbu-interview-preview-dlg" style="width: 500px;">
-<div class="mbu-dlg-title"><span onclick="mbu.closeDlg('mbu-interview-preview-dlg')" class="close-btn">x</span><p>Read PM</p></div>
+<div class="mbu-dlg" id="mbu-interview-preview-dlg" style="width: 600px;">
+<div class="mbu-dlg-title"><span onclick="mbu.closeDlg('mbu-interview-preview-dlg')" class="close-btn">x</span><p>Interview Preview</p></div>
 <div class="mbu-dlg-body">
 
 <input type="hidden" id="mbu-id-interview" name="mbu-id-interview" value="0"></input>

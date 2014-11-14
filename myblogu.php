@@ -515,3 +515,16 @@ function mbuGetCategories()
     return (isset($data['categories']) ? $data['categories'] : null);
 }
 
+	// find post by interview
+function mbuGetPostByInterview($id_interview, $output = OBJECT) {
+    global $wpdb;
+	
+    $post = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key='mbu_interview_id'", $id_interview ));
+
+    if($post)
+    {
+        return get_post($post, $output);
+    }
+
+    return null;
+}

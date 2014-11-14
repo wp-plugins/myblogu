@@ -242,9 +242,18 @@ function mbu_interviews_page(){
             mbuShowMessage($res, true);
             return;        
         }
-        
+
+        $interviews = $res['interviews'];
+        foreach($interviews as &$iv)
+        {
+            $post = mbuGetPostByInterview($iv['id']);
+            if(is_object($post))
+            {
+                $iv['post_id'] = $post->ID;
+            }
+        }
         echo mbuRunTpl('interviews_list', array(
-                                        'interviews' => $res['interviews'],
+                                        'interviews' => $interviews,
                                         'title' => 'Active Interviews',
                                         'mbu_page' => $mbu_page,
                                         ));        
@@ -261,9 +270,18 @@ function mbu_interviews_page(){
             mbuShowMessage($res, true);
             return;        
         }
+        $interviews = $res['interviews'];
+        foreach($interviews as &$iv)
+        {
+            $post = mbuGetPostByInterview($iv['id']);
+            if(is_object($post))
+            {
+                $iv['post_id'] = $post->ID;
+            }
+        }
         
         echo mbuRunTpl('interviews_list', array(
-                                        'interviews' => $res['interviews'],
+                                        'interviews' => $interviews,
                                         'title' => 'Interviews Archive',
                                         'mbu_page' => $mbu_page,
                                         ));        
@@ -289,6 +307,33 @@ function mbu_interviews_page(){
             return;            
         }
         $interview = $res['interviews'][0];
+        $post = mbuGetPostByInterview($interview['id']);
+        if(is_object($post))
+        {
+            $interview['post_id'] = $post->ID;
+            
+            if($interview['status'] == 2 && ($post->post_status == 'publish' || $post->post_status == 'future'))
+            {
+                $data = array(
+                    'id_interview' => $id_interview,
+                    'url' => $post->guid,
+                    'action' => 'save_url',
+                );
+                if($post->post_status == 'future')
+                {
+                    $date_info = explode(" ", $post->post_date);
+                    $shedule_date = $date_info[0];
+                    $data['scheduled'] = $shedule_date;
+                }
+                $res = mbu_api(MBU_API_BASE_URL.'/interview', $data, true);
+                if(is_array($res) && $res['new_status'] == 3)
+                {
+                    $interview['status'] = 3;
+                    $interview['status_name'] = 'Published';
+                    $interview['url'] = $post->guid;
+                }
+            }
+        }
         
         $res = mbu_api(MBU_API_BASE_URL.'/interview', array('action' => 'get_questions_answers', 'id_interview' => $id_interview), true);
         if(is_string($res))
@@ -307,6 +352,7 @@ function mbu_interviews_page(){
                                         'mbu_page' => $mbu_page,
                                         'interview' => $interview,
                                         'questions' => $questions,
+                                        'post' => $post,
                                         ));        
     }
     else if($mbu_page == 'new_interview')

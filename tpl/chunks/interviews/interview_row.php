@@ -18,6 +18,11 @@
 	    echo '<div class="mbu-hide-comment mbu-list-info"><b>Hide Comment:</b> '.sanitize_text_field($iv['hide_comment']).'</div>';
 	}
         
+	if($iv['status'] == 3 && !empty($iv['url']))
+	{
+	    echo '<div class="mbu-url mbu-list-info"><b>URL:</b> <a target="_blank" href="'.$iv['url'].'">'.$iv['url'].'</a></div>';
+	}
+
         echo '<div class="mbu-context-menu">';
         if($iv['answers_count'] > 0)
         {
@@ -43,6 +48,11 @@
 	{
 	    echo '<a href="javascript:mbu.changeInterviewDeadline('.$iv['id'].', \''.$iv['deadline'].'\')" class="mbu-btn mbu-blue-btn">expand deadline</a>';
 	}
+	if(!empty($iv['post_id']) && ($iv['status'] == 2 || $iv['status'] == 3))
+	{
+	    echo '<a href="'.admin_url('post.php?post='.$iv['post_id'].'&action=edit').'"  target="_blank" class="mbu-btn mbu-blue-btn">Edit Post</a>';
+	}
+
         echo '</div>';        
         echo '</td>';
 

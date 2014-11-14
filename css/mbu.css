@@ -170,6 +170,7 @@ padding: 20px 10px;
 }
 .mbu-brainstorm-status, .mbu-interview-status{
     font-style: italic;
+    color: #666666;
 }
 .mbu-brainstorm-status-0, .mbu-interview-status-0, .mbu-idea-status-name-0{
     color: #666666;
@@ -435,4 +436,12 @@ table.mbu-alerts{
     font-weight: 900;
     font-size: 11px;
     margin: 0px 5px;
+}
+
+.submit .mbu-dlg-button{
+    margin-left: 10px;
+}
+.mbu-list-info{
+    font-size: 12px;
+    margin-top: 10px;
 }
