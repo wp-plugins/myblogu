@@ -3,7 +3,7 @@
 	Plugin Name: MyBlogU
 	Plugin URI: http://myblogu.com
 	Description:  <strong>MyBlogU official plugin</strong>
-	Version: 0.0.1
+	Version: 0.0.2
 	Author:  Michael Tikhonin (MyBlogU)
 	Author URI: http://phpclimber.com
 	License: GPL2
@@ -527,4 +527,29 @@ function mbuGetPostByInterview($id_interview, $output = OBJECT) {
     }
 
     return null;
+}
+
+function mbuGetBlogTitle()
+{
+    $blog_title = get_bloginfo('name', 'display');
+    if(empty($blog_title))
+    {
+        $blog_title = mbuGetDomainFromURL(MBU_BLOG_URL);
+    }
+    return $blog_title;
+}
+
+function mbuGetDomainFromURL($url){
+    $host = parse_url($url, PHP_URL_HOST);
+    if($host){
+        $host = strtolower(mbuTrimWWW(trim($host)));
+    }
+    return $host;
+}
+
+function mbuTrimWWW($host){
+    if(strpos($host, "www.") === 0){
+        $host = substr($host, 4);
+    }
+    return $host;
 }

@@ -11,10 +11,9 @@
         echo '<h2>Edit Interview Project  (<span class="mbu-interview-status mbu-interview-status-'.$interview['status'].'">'.$interview['status_name'].'</span>)</h2>';
     }
 
-    if(!empty($requests))
+    if(!empty($interview['id']) && $interview['status'] == 0)
     {
-       mbuShowMessage('First archive or delete <a href="'.admin_url('admin.php?page=mbu_brainstorms&mbu_page=active_brainstorms').'">existing projects</a>.', true);
-       exit();
+       mbuShowMessage('The request is saved as a draft. Please add questions and click "Publish" to send to MyBlogU', true);
     }
 ?>
 
@@ -47,7 +46,7 @@
 <label for="blogname">Description</label>
 </th>
 <td>
-    <textarea id="mbu-comment" class="large-text code" rows="4" name="mbu-comment" autocomplete="off"><?php echo sanitize_text_field($interview['title']); ?></textarea>
+    <textarea id="mbu-comment" class="large-text code" rows="4" name="mbu-comment" autocomplete="off"><?php echo sanitize_text_field($interview['comment']); ?></textarea>
 </td>
 </tr>
 
@@ -94,17 +93,9 @@ Non-logged-in users will be able to see your request and the associated site but
 </table>
 </form>
 
-<p class="submit">
-<button id="mbu-submit" class="button button-primary mbu-dlg-button" onclick="mbu.saveInterview(true)" name="submit">Save Project</button>
-<?php
-    if($interview['id'] > 0 && $interview['status'] == 0)
-    {
-        echo '<button id="mbu-submit-publish" class="button button-primary mbu-dlg-button" onclick="mbu.publishInterview('.$interview['id'].')" name="submit">Publish Project</button>';
-    }
-?>
-</p>
 
-<h3>Questions</h3>
+
+<!-- <h3>Questions</h3> -->
 <a name="questions">&nbsp;</a>
 
 <p class="submit">
@@ -130,12 +121,36 @@ Non-logged-in users will be able to see your request and the associated site but
         }
 	echo '</table>';
     }
+    else
+    {
+	echo '<div class="updated fade"><p>Add at least one question (or more) before publishing the interview request</p></div>';
+    }
 ?>
+
+
+
+
+
+<p class="submit">
+<button id="mbu-submit" class="button button-primary mbu-dlg-button" onclick="mbu.saveInterview(true)" name="submit">Save Project</button>
+<?php
+    if($interview['id'] > 0 && $interview['status'] == 0)
+    {
+        echo '<button id="mbu-submit-publish" class="button button-primary mbu-dlg-button" onclick="mbu.publishInterview('.$interview['id'].')" name="submit">Publish Project</button>';
+    }
+?>
+</p>
 
 <script type="text/javascript">
 
     jQuery(document).ready(function(){
-         jQuery('#mbu-project-deadline').datepicker({dateFormat:'yy-mm-dd'});
+         jQuery('#mbu-project-deadline').datepicker({
+				dateFormat : 'yy-mm-dd',
+				beforeShowDay : function(date){
+					var d = new Date();
+					return [(date > d)];
+				    }
+				});
     });
 </script>
 </div>

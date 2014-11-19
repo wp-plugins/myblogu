@@ -45,7 +45,7 @@ if ( is_admin() ){
                                 'ajaxurl' => admin_url( 'admin-ajax.php' ), 
                                 'mbu_url' => MBU_BASE_URL,
                                 'img_path' => MBU_IMGS,
-                                'blog_title' => get_bloginfo('name', 'display'),
+                                'blog_title' => mbuGetBlogTitle(),
                                 'blog_url' => MBU_BLOG_URL,
                                 'blog_admin_url' => admin_url(),
                                 );
@@ -65,12 +65,16 @@ if ( is_admin() ){
             wp_register_script('file_download', MBU_PLUGIN_URL.'/js/jquery.fileDownload.js', array('jquery') );
             wp_enqueue_script('file_download');
             
+            wp_register_script('pretty_photo', MBU_PLUGIN_URL.'/js/pretty_photo/js/jquery.prettyPhoto.js', array('jquery') );
+            wp_enqueue_script('pretty_photo');            
+            
             wp_register_script('base64', MBU_PLUGIN_URL.'/js/base64.js');
             wp_enqueue_script('base64');
 	 }
 		
 	 if (MBU_LOAD_CSS) {
             wp_enqueue_style('mbu-style', MBU_CSS_URL);
+            wp_enqueue_style('pretty-photo-style', MBU_PLUGIN_URL.'/js/pretty_photo/css/prettyPhoto.css');
             wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
 	 }
     }
@@ -302,6 +306,85 @@ function mbuGetIdeaDlg(){
 
 add_action('wp_ajax_mbuGetIdeaDlg', 'mbuGetIdeaDlg');
 
+
+function mbuGetInterviewPreviewDlg(){
+
+    header ( 'Content-type: application/json' );
+    if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
+        return;
+    }
+    $res = array();
+    $id_interview = isset($_REQUEST['id_interview']) ? intval($_REQUEST['id_interview']) : 0;
+    if(empty($id_interview))
+    {
+        $res['err'] = 'Bad Request';
+        echo json_encode($res);
+        exit();        
+    }
+    
+    $gen_content_table = isset($_REQUEST['gen_content_table']) ? intval($_REQUEST['gen_content_table']) : 0;
+    $gen_author_info = isset($_REQUEST['gen_author_info']) ? intval($_REQUEST['gen_author_info']) : 0;
+    
+    $data = array('action' => 'get_code', 'gen_content_table' => $gen_content_table, 'gen_author_info' => $gen_author_info , 'id_interview' => $id_interview, 'preview' => 1);
+    $ret = mbu_api(MBU_API_BASE_URL.'/interview', $data);
+    if(is_string($ret))
+    {
+        $res['err'] = $ret;
+        echo json_encode($res);
+        exit();        
+    }
+
+    $post = mbuGetPostByInterview($id_interview);
+    if(!empty($post))
+    {
+        $ret['post_id'] = $post->ID;
+    }
+    $res['html'] = mbuRunTpl('dlg/interview_preview', array('interview' => $ret));
+    echo json_encode($res);
+    exit();
+}
+
+add_action('wp_ajax_mbuGetInterviewPreviewDlg', 'mbuGetInterviewPreviewDlg');
+
+/*
+function mbuGetPmDlg(){
+    
+    header ( 'Content-type: application/json' );
+    if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
+        return;
+    }
+    $res = array();
+    $id_pm = isset($_REQUEST['id_pm']) ? intval($_REQUEST['id_pm']) : 0;
+    if(empty($id_pm))
+    {
+        $res['err'] = 'Bad Request';
+        echo json_encode($res);
+        exit();        
+    }
+    
+    $data = array('action' => 'read_message', 'id_pm' => $id_pm);
+    $ret = mbu_api(MBU_API_BASE_URL.'/pm', $data);
+    if(is_string($ret))
+    {
+        $res['err'] = $ret;
+        echo json_encode($res);
+        exit();        
+    }
+    if(empty($ret['message']))
+    {
+        $res['err'] = 'Message Not Found';
+        echo json_encode($res);
+        exit();                
+    }
+    $message = $ret['message'];
+    
+    $res['html'] = mbuRunTpl('dlg/read_pm', array('message' => $message));
+    echo json_encode($res);
+    exit();
+}
+
+add_action('wp_ajax_mbuGetIdeaDlg', 'mbuGetIdeaDlg');
+*/
 
     /*
      *  создает пост на основе интервью

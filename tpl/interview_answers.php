@@ -2,6 +2,8 @@
 <?php
     echo mbuRunTpl('chunks/interviews/top_menu', array('active_page' => $mbu_page));
 
+    echo '<p class="mbu-help">View <a href="javascript: mbu.showPageHelp(\'interview\');"> this video tutorial</a> on how this section works</p>';
+
     echo '<h2>'.$interview['title'].'  (<span class="mbu-interview-status mbu-interview-status-'.$interview['status'].'">'.$interview['status_name'].'</span>)</h2>';
 ?>
 
@@ -19,20 +21,25 @@
 <?php
     if($interview['status'] == 1)
     {
-        echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.closeInterview('.$interview['id'].')">Close Project</button>';
+        echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.closeInterview('.$interview['id'].')">Close interview to create a new draft</button>';
     }
 
-    if($interview['status'] == 2 || $interview['status'] == 3)
+    if(empty($interview['post_id']) && ($interview['status'] == 2 || $interview['status'] == 3))
     {
         echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.interviewPreviewCode('.$interview['id'].')">Preview</button>';
     }
 
-    if($interview['status'] == 2)
+    if(empty($interview['post_id']) && $interview['status'] == 2)
     {
         echo '<button class="button button-primary mbu-dlg-button" onclick="mbu.interviewCreatePost('.$interview['id'].')">Create Draft Post</button>';
     }    
 
-    if(!empty($interview['post_id']) && ($interview['status'] == 2 || $interview['status'] == 3))
+    if(!empty($interview['post_id']) && ($interview['status'] == 2))
+    {
+        echo '<a href="'.admin_url('post.php?post='.$interview['post_id'].'&action=edit').'"  target="_blank" class="button button-primary mbu-dlg-button">Review, Edit & Publish / Schedule your article</a>';
+    }
+
+    if(!empty($interview['post_id']) && ($interview['status'] == 3))
     {
         echo '<a href="'.admin_url('post.php?post='.$interview['post_id'].'&action=edit').'"  target="_blank" class="button button-primary mbu-dlg-button">Edit Post</a>';
     }

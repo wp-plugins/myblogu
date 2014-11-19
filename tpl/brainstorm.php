@@ -21,6 +21,8 @@
 </td>
 </tr>
 
+<!--
+
 <tr>
 <th scope="row">
 <label for="mbu-project-cat">Category</label>
@@ -51,6 +53,8 @@ Non-logged-in users will be able to see your request and the associated site but
 </fieldset>
 </td>
 </tr>
+
+-->
 
 </tbody>
 </table>

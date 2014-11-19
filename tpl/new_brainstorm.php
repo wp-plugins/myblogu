@@ -11,6 +11,8 @@
     }
 ?>
 
+<p class="mbu-help">View <a href="javascript: mbu.showPageHelp('new_brainstorm');">this video</a> to get an idea of what kind of requests you can create here</p>
+
 <form novalidate="novalidate" method="post">
 <input id="mbu-brainstorm-id" type="hidden" value="<?php echo $brainstorm['id']; ?>" name="mbu-brainstorm-id"></input>
 <input id="mbu-brainstorm-status" type="hidden" value="<?php echo $brainstorm['status']; ?>" name="mbu-brainstorm-status"></input>

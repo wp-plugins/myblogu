@@ -9,9 +9,12 @@
 
 <div class="mbu-scrollbox" id="mbu-pm-text"></div>
 
+<p>
+To reply or delete, <a id="mbu-read-pm-link" href="" target="_blank">please view it on MBU</a>
+</p>
+
 <p class="dlg-buttons">
     <button  onclick="mbu.closeDlg('mbu-read-pm-dlg')" class="mbu-dlg-button">Close</button>
-    <button  onclick="mbu.delPm();" class="mbu-dlg-button">Delete PM</button>
 </p>
 </div>
 

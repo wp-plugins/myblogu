@@ -40,7 +40,7 @@ background-color: #EEEEEE;
 border: 1px solid #333333;
 font-size: 11px;
 display: none;
-font-weight: 900;
+/*font-weight: 900;*/
 }
 	.mbu-dlg .mbu-dlg-title{
 	background-color: #333333;
@@ -420,7 +420,7 @@ table.mbu-alerts{
     height: 20px; 
     width: auto;    
 }
-.mbu-question-answer .mbu-answer-text {
+.mbu-question-answer .mbu-answer-text{
     background-color: #ffffff;
     border: 1px solid #103b74;
     border-radius: 4px;
@@ -429,6 +429,18 @@ table.mbu-alerts{
     margin-left: 40px;
     padding: 5px;
 }
+.mbu-dlg .mbu-dlg-msg{
+    background-color: #ffffff;
+    border: 1px solid #103b74;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-bottom: 5px;
+    padding: 5px;
+    font-weight: 300;
+}
+    .mbu-dlg .mbu-dlg-msg strong{
+        font-weight: 900;
+    }
     .mbu-question-answer .mbu-answer-text p{
         font-size: 10px;
     }
@@ -444,4 +456,14 @@ table.mbu-alerts{
 .mbu-list-info{
     font-size: 12px;
     margin-top: 10px;
+}
+.mbu-alert li{
+    list-style: disc;
+    margin-left: 20px;
+}
+.mbu-help{
+    font-style: italic;
+    padding: 10px 45px;
+    background: transparent url("../img/help2.png") left center no-repeat;
+    background-size: 40px auto;
 }

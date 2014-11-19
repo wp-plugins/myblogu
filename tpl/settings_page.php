@@ -181,6 +181,24 @@
 ?>
 
 
+<div style="width: 100%; clear: both; margin-top: 10px;" class="updated fade mbu-alert"><p>
+      MyBlogU is the free blogging community that lets you
+      crowd source your content idea and even content creation: Ask
+      MyBlogU users to brainstorm a great idea and even provide blurbs
+      (=partially write your content for you) and create better content
+      easier (=better writing productivity!) Action items:<br>
+      <ul>
+        <li>Please take our quick <a href="https://www.udemy.com/myblogu-content-marketing/" target="_blank">Udemy
+            course</a> (won't take you much time) or view our video
+          tutorials on our <a href="https://www.youtube.com/user/MyBlogu" target="_blank">Youtube channel</a></li>
+        <li>Feel free to create your own <a href="<?php echo admin_url('admin.php?page=mbu_brainstorms'); ?>" target="_blank">Brainstorm
+            project</a> to see how it works!<br>
+        </li>
+      </ul>
+</p>
+</div>
+
+
 </div>
 <?php
 

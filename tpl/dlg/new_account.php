@@ -1,6 +1,6 @@
 <?php
 
-$blog_title = get_bloginfo('name', 'display');
+$blog_title = mbuGetBlogTitle();
 $blog_url = get_bloginfo('url', 'raw');
 
 if(empty($blog_title))

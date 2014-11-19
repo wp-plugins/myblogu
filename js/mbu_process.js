@@ -14,6 +14,20 @@ init : function(){
                                 
                              });        
     });
+    
+    jQuery('.mbu-checkbox-pm').on('click', function(){
+        if(jQuery('.mbu-checkbox-pm:checked').length > 0)
+        {
+            jQuery('.mbu-group-actions').fadeIn(500);
+        }
+        else
+        {
+            jQuery('.mbu-group-actions').fadeOut(500);
+        }
+    });
+    
+    jQuery.fn.prettyPhoto();
+    
 },
 
 showMessage : function(pmsg)
@@ -97,7 +111,7 @@ cont = cont || '';
 var code = '<div class="mbu-dlg" id="mbu-confirm-dlg" style="z-index: 999999;" data-mbu-inserted-dlg="1">';
 code += '<div class="mbu-dlg-title"><span onclick="mbu.closeDlg(\'mbu-confirm-dlg\')" class="close-btn">x</span><p>'+title+'</p></div>';
 code += '<div class="mbu-dlg-body">';
-code += cont;
+code += '<div class="mbu-dlg-msg">'+cont+'</div>';
 code += '<p class="dlg-buttons"><button id="mbu-dlg-ok">OK</button><button onclick="mbu.closeDlg(\'mbu-confirm-dlg\');">Cancel</button></p>';
 code += '</div>';
 code += '</div>';
@@ -697,6 +711,68 @@ delPm : function(id_pm)
     }, 'Delete this message?');
 },
 
+markReadPm : function(id_pm)
+{
+    var p = {
+        'id_pm' : id_pm,
+        'action' : 'read_message',
+    };
+
+    mbu.api_proxy('pm', p, function(ret){
+                                //jQuery('#msg-'+id_pm+' .mbu-pm-status').text('read');
+                                jQuery('#msg-'+id_pm).remove();
+                             });
+        
+},
+
+delPmGrp : function()
+{
+    var sel_count = jQuery('.mbu-checkbox-pm:checked').length;
+    if(sel_count > 0)
+    {
+        mbu.confirmDlg('Please confirm', function(){
+            mbu.closeDlg('mbu-confirm-dlg');
+            
+            jQuery('.mbu-checkbox-pm:checked').each(function(){
+                var id_pm = jQuery(this).attr('data-id-message');
+                var p = {
+                    'id_pm' : id_pm,
+                    'action' : 'del',
+                };
+
+                mbu.api_proxy('pm', p, function(ret){
+                                jQuery('#msg-'+id_pm).remove();
+                             });
+            });
+        
+        }, 'Delete '+sel_count+' messages?');
+    }
+},
+
+markReadPmGrp : function()
+{
+    var sel_count = jQuery('.mbu-checkbox-pm:checked').length;
+    if(sel_count > 0)
+    {
+        mbu.confirmDlg('Please confirm', function(){
+            mbu.closeDlg('mbu-confirm-dlg');
+            
+            jQuery('.mbu-checkbox-pm:checked').each(function(){
+                var id_pm = jQuery(this).attr('data-id-message');
+                var p = {
+                    'id_pm' : id_pm,
+                    'action' : 'read_message',
+                };
+
+                mbu.api_proxy('pm', p, function(ret){
+                                jQuery('#msg-'+id_pm).remove();
+                             });
+            });
+        
+        }, 'Process with '+sel_count+' messages?');        
+    }
+},
+
 saveInterview : function(reload, callback)
 {
     var p = {
@@ -748,7 +824,7 @@ addInterviewQuestion : function()
     var id_interview = jQuery('#mbu-id-interview').val();
     var f = function(){
         
-        var id_interview = jQuery('#mbu-id-interview').val()
+        var id_interview = jQuery('#mbu-id-interview').val();
         if(id_interview == 0)
         {
             return;
@@ -768,8 +844,7 @@ addInterviewQuestion : function()
     else
     {
         f();
-    }
-    
+    }    
 },
         
 onSaveQuestion : function()
@@ -786,8 +861,15 @@ onSaveQuestion : function()
     mbu.api_proxy('my-interviews', p, function(ret){
                                 mbu.closeDlg('mbu-question-dlg');
                                 setTimeout(function(){
-                                        location.hash = '#questions';
-                                        location.reload();
+                                        if(mbu.getUrlVars()['id_interview'] > 0)
+                                        {
+                                            location.hash = '#questions';
+                                            location.reload();
+                                        }
+                                        else
+                                        {
+                                            location.replace(mbu_script_data['blog_admin_url']+'admin.php?page=mbu_interviews&mbu_page=edit_interview&id_interview='+p['id_interview']+'#questions').reload();
+                                        }
                                     }, 1000);
                              });
     
@@ -918,21 +1000,30 @@ onChangeInterviewDeadline : function()
 
 closeInterview : function(id_interview)
 {
-    mbu.confirmDlg('Please Confirm', function(){
-        var p = {
-            'id_interview' : id_interview,
-            'action' : 'close_interview',
-        };
+    var answers_count = jQuery('.mbu-answer-select-checkbox:checked').length;
+    
+    if(answers_count > 0)
+    {
+        mbu.confirmDlg('Please Confirm', function(){
+            var p = {
+                'id_interview' : id_interview,
+                'action' : 'close_interview',
+            };
 
-        mbu.setButtonWait(jQuery('#mbu-confirm-dlg #mbu-dlg-ok'));
-        mbu.api_proxy('interview', p, function(ret){
+            mbu.setButtonWait(jQuery('#mbu-confirm-dlg #mbu-dlg-ok'));
+            mbu.api_proxy('interview', p, function(ret){
                                 setTimeout(function(){                                
                                     location.hash = '#actions';
                                     location.reload();
                                 }, 1000);
                              });
         
-    }, 'Close this Interview?');
+        }, '<strong>You have selected '+answers_count+' replies to include into your final article.</strong> Close the interview to create a new draft article containing selected answers (Click OK and then select "Create a draft post" to import all answers into a new draft. You\'ll be able to edit and publish from there!)?');
+    }
+    else
+    {
+        mbu.showMessage('Please select some answers!');
+    }
 },
 
 interviewGetCodeOptions : function(id_interview, callback)
@@ -953,8 +1044,6 @@ interviewPreviewCode : function(id_interview)
 
 onInterviewPreviewCode : function()
 {
-    jQuery('#mbu-interview-preview-dlg #mbu-interview-text').html('');
-    jQuery('#mbu-interview-preview-dlg #mbu-interview-title').text('');
     var p = {
         'id_interview' : jQuery('#mbu-interview-code-options-dlg #mbu-id-interview').val(),
         'preview' : 1,
@@ -964,11 +1053,15 @@ onInterviewPreviewCode : function()
     };
 
     mbu.setButtonWait(jQuery('#mbu-interview-code-options-dlg #mbu-ok-button'));
-    mbu.api_proxy('interview', p, function(ret){
-                               mbu.dlg('mbu-interview-preview-dlg');
-                               jQuery('#mbu-interview-preview-dlg #mbu-interview-text').html(ret.code);
-                               jQuery('#mbu-interview-preview-dlg #mbu-interview-title').text(ret.title);
-                          });    
+    mbu.ajax(mbu_script_data['ajaxurl'], 'action=mbuGetInterviewPreviewDlg&gen_author_info='+p['gen_author_info']+'&gen_content_table='+p['gen_content_table']+'&id_interview='+p['id_interview'], 
+        function(data){
+            if(typeof(data.html) != 'undefined')
+            {
+                jQuery('#mbu-interview-preview-dlg').replaceWith(data.html);
+                mbu.dlg('mbu-interview-preview-dlg');
+            }
+        });    
+        
 },
 
 interviewCreatePost : function(id_interview)
@@ -988,6 +1081,35 @@ onInterviewCreatePost : function()
         function(data){
             mbu.showMessage(data.msg);
         });    
+},
+
+showPageHelp : function(method)
+{
+
+    if(method == 'mbu_brainstorms')
+    {
+        jQuery.prettyPhoto.open('https://www.youtube.com/watch?v=QxcmAO1e4NQ', '', '');
+    } 
+    else if(method == 'new_brainstorm')
+    {
+        jQuery.prettyPhoto.open('https://www.youtube.com/watch?v=W7tIhnnllbU');
+    }
+    else if(method == 'mbu_interviews')
+    {
+        jQuery.prettyPhoto.open('https://www.youtube.com/watch?v=1YLGMyBFRuU');
+    }
+    else if(method == 'interview')
+    {
+        jQuery.prettyPhoto.open('https://www.youtube.com/watch?v=-nMTYqC8h-Y');
+    }    
+},
+
+getUrlVars : function() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&^#]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
 },
 
 };
