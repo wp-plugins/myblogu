@@ -3,7 +3,7 @@
 	Plugin Name: MyBlogU
 	Plugin URI: http://myblogu.com
 	Description:  <strong>MyBlogU official plugin</strong>
-	Version: 0.0.2
+	Version: 0.0.3
 	Author:  Michael Tikhonin (MyBlogU)
 	Author URI: http://phpclimber.com
 	License: GPL2
@@ -247,7 +247,7 @@ function mbu_process_http($url, &$http_code = null, $postdata = false){
     curl_setopt($curl_conn, CURLOPT_CONNECTTIMEOUT, 20);
     //curl_setopt($curl_conn, CURLOPT_LOW_SPEED_LIMIT, 1024);
     //curl_setopt($curl_conn, CURLOPT_LOW_SPEED_TIME, 5);
-    curl_setopt($curl_conn, CURLOPT_CLOSEPOLICY, CURLCLOSEPOLICY_LEAST_RECENTLY_USED);
+    //curl_setopt($curl_conn, CURLOPT_CLOSEPOLICY, CURLCLOSEPOLICY_LEAST_RECENTLY_USED);
     curl_setopt($curl_conn, CURLOPT_RETURNTRANSFER, 1);
 
     curl_setopt($curl_conn, CURLOPT_FOLLOWLOCATION, 1);
@@ -301,18 +301,16 @@ function mbu_api($url, $data = null, $silent = false, $method = 'POST')
     {
         if(!is_array($val))
         {
-            $postdata .= $key.'='.$val.'&';
+            $postdata .= $key.'='.urlencode($val).'&';
         }
     }
-
+    
     if($method == 'GET')
     {
         $url .= '?'.$postdata;
         $postdata = null;
     }
-    
     $result = mbu_process_http($url, $http_code, $postdata);
-    //var_dump($postdata);
     if ($http_code != 200) {
                 //var_dump($result->errors);
 		// display error message of some sort

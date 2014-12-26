@@ -488,7 +488,9 @@ api_proxy : function(api_method, params, success, method)
 {
     method = method || "POST";
     console.log(params);
-    mbu.ajax(mbu_script_data['ajaxurl'], 'api_method='+api_method+'&action=mbuApiProxy&params='+Base64.encode(JSON.stringify(params)), success, method);
+    var p = JSON.stringify(params);
+    p = jQuery('<div />').text(p).html();
+    mbu.ajax(mbu_script_data['ajaxurl'], 'api_method='+api_method+'&action=mbuApiProxy&params='+Base64.encode(p), success, method);
 },
 
 saveBrainstorm : function()
@@ -501,6 +503,7 @@ saveBrainstorm : function()
             'tags'   : jQuery('#mbu-project-tags').val(),
             'id_category' : jQuery('#mbu-project-cat').val(),
             'public' : jQuery('#mbu-public-project:checked').length,
+            'pro' : jQuery('#mbu-pro-project:checked').length,
             'action' : 'save_request',
         };
 
@@ -1111,6 +1114,149 @@ getUrlVars : function() {
     });
     return vars;
 },
+
+addBrainstormTODO : function(id_idea)
+{
+    jQuery('#mbu-todo-dlg #mbu-id-idea').val(id_idea);
+    jQuery('#mbu-todo-dlg #mbu-todo-comment').val('');
+    mbu.dlg('mbu-todo-dlg');    
+},
+        
+saveBrainstormTODO : function()
+{
+    var p = {
+        'id_idea'    : jQuery('#mbu-todo-dlg #mbu-id-idea').val(),
+        'txt'        : jQuery('#mbu-todo-dlg #mbu-todo-comment').val(),
+        'remind'     : jQuery('#mbu-todo-dlg #mbu-remind-date').val(),
+        'action'     : 'add_todo_item',
+    };
+
+    mbu.setButtonWait('#mbu-todo-dlg #mbu-dlg-ok');
+    mbu.api_proxy('ideas', p, function(ret){
+                                            setTimeout(function(){
+                                                        location.hash = '#mbu-idea-'+p['id_idea'];
+                                                        location.reload();
+                                                }, 1000);
+                                        });    
+},
+        
+delTODOItem : function(id_todo)
+{
+    mbu.confirmDlg('Confirmation', function(){
+        var p = {
+            'id_todo'    : id_todo,
+            'action'     : 'del_todo_item',
+        };
+
+        mbu.setButtonWait('#mbu-dlg-ok');
+        mbu.api_proxy('ideas', p, function(ret){
+                                            setTimeout(function(){
+                                                        jQuery('#todo-item-'+id_todo).remove();
+                                                        //location.hash = '#mbu-idea-'+ret['id_idea'];
+                                                        //location.reload();
+                                                }, 1000);
+                                        });            
+    },
+    'Remove TODO Item?')    
+},
+
+showTODOItem : function(id_todo)
+{
+    mbu.ajax(mbu_script_data['ajaxurl'], 'action=mbuGetTODOItemDlg&id_todo='+id_todo, function(ret){
+        
+        if(typeof(ret['html']) != 'undefined')
+        {
+            jQuery('#mbu-show-todo-idea-dlg').replaceWith(ret['html']);
+            mbu.dlg('mbu-show-todo-idea-dlg');
+        }
+    });
+},
+
+widgetSaveIdea : function()
+{
+    var p = {
+        'id_request'      : jQuery('#mbu_widget #mbu-project').val(),
+        'title'           : jQuery('#mbu_widget #mbu-idea-title').val(),
+        'author_comment'  : jQuery('#mbu_widget #mbu-idea-text').val(),
+        'action'          : 'save_idea',
+    };
+
+    if(!p.id_request)
+    {
+        mbu.showMessage("Please select project!");
+        return;
+    }
+    if(!p.title || p.title.replace(/(^\s+)|(\s+$)/g, "") == '')
+    {
+        mbu.showMessage("Title can't be empty!");
+        return;
+    }
+    if(!p.author_comment || p.author_comment.replace(/(^\s+)|(\s+$)/g, "") == '')
+    {
+        mbu.showMessage("Idea text can't be empty!");
+        return;
+    }
+
+    //mbu.setButtonWait('#mbu-send-idea-button');
+    mbu.api_proxy('article-requests', p, function(ret){
+                                            mbu.showMessage('Idea was sent successfully');
+                                            setTimeout(function(){
+                                                        //location.hash = '#mbu-idea-'+ret['id_idea'];
+                                                        location.reload();
+                                                }, 1000);
+                                        });            
+    
+},
+
+deleteIdea : function(id_idea)
+{
+    mbu.confirmDlg('Confirmation', function(){
+        var p = {
+            'id_idea'    : id_idea,
+            'action'     : 'delete_idea',
+        };
+
+        mbu.setButtonWait('#mbu-confirm-dlg #mbu-dlg-ok')
+        mbu.api_proxy('ideas', p, function(ret){
+                                            mbu.showMessage(ret['msg'])
+                                            jQuery('#mbu-idea-'+id_idea).remove();
+                                            mbu.closeDlg('mbu-confirm-dlg');
+                                        });            
+    },
+    'Remove Idea?')        
+},
+
+saveIdeaURL : function(id_idea)
+{
+    mbu.ajax(mbu_script_data['ajaxurl'], 'action=mbuGetIdeaURLDlg&id_idea='+id_idea, function(ret){
+        
+        if(typeof(ret['html']) != 'undefined')
+        {
+            jQuery('#mbu-idea-url-dlg').replaceWith(ret['html']);
+            mbu.dlg('mbu-idea-url-dlg');
+        }
+    });    
+},
+        
+onSaveIdeaURL : function()
+{
+    var p = {
+        'id_idea'    : jQuery('#mbu-idea-url-dlg #mbu-id-idea').val(),
+        'link'       : jQuery('#mbu-idea-url-dlg #mbu-idea-link').val(),
+        'action'     : 'save_idea_link',
+    };
+
+    mbu.setButtonWait('#mbu-idea-url-dlg #mbu-dlg-ok')
+    mbu.api_proxy('ideas', p, function(ret){
+                                            mbu.showMessage(ret['msg'])
+                                            mbu.closeDlg('mbu-idea-url-dlg');
+                                            setTimeout(function(){
+                                                        location.hash = '#mbu-idea-'+p['id_idea'];
+                                                        location.reload();
+                                                }, 1000);                                            
+                                        });            
+    
+}
 
 };
 

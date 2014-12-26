@@ -138,6 +138,10 @@ Non-logged-in users will be able to see your request and the associated site but
     {
         echo '<button id="mbu-submit-publish" class="button button-primary mbu-dlg-button" onclick="mbu.publishInterview('.$interview['id'].')" name="submit">Publish Project</button>';
     }
+    if($interview['id'] > 0 && $interview['status'] == 1)
+    {
+        echo '<a id="mbu-submit-publish" target="_blank" href="'.MBU_BASE_URL.'/interview?id_interview='.$interview['id'].'" class="button button-primary mbu-dlg-button" name="submit">Partially Publications</a>';
+    }
 ?>
 </p>
 

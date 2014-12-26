@@ -55,7 +55,6 @@
 </td>
 </tr>
 
-
 <tr class="option-site-visibility">
 <th scope="row">Public project </th>
 <td>
@@ -67,6 +66,27 @@ Non-logged-in users will be able to see your request and the associated site but
 </fieldset>
 </td>
 </tr>
+
+
+<?php
+    if($user_info['user']['g_ispro'] == 1)
+    {
+?>
+<tr class="option-site-visibility">
+<th scope="row">Premium project </th>
+<td>
+<fieldset>
+<label for="mbu-pro-project">
+<input id="mbu-pro-project" type="checkbox" value="0" name="mbu-pro-project" <?php if($brainstorm['pro'] == 1) echo ' checked="checked" '; ?> autocomplete="off"></input>
+You can create one promotional request per time. To open a new one, please archive your existing one
+</label>
+</fieldset>
+</td>
+</tr>
+<?php
+    }
+?>
+
 
 </tbody>
 </table>

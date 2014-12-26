@@ -72,4 +72,7 @@ Non-logged-in users will be able to see your request and the associated site but
 echo mbuRunTpl('dlg/approve_idea');
 echo mbuRunTpl('dlg/reject_idea');
 echo mbuRunTpl('dlg/idea');
+echo mbuRunTpl('dlg/todo_item');
+echo mbuRunTpl('dlg/show_idea_todo');
+echo mbuRunTpl('dlg/enter_idea_url');
 ?>

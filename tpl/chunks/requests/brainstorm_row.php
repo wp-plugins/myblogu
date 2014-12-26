@@ -1,7 +1,14 @@
 <?php
         echo '<tr id="mbu-request-'.$req['id'].'" class="mbu-request">';
         echo '<td style="width: 40%;">';
-        echo '<h5>'.sanitize_text_field($req['title']).' (<span class="mbu-brainstorm-status mbu-brainstorm-status-'.$req['status'].'">'.$req['status_name'].'</span>)</h5>';
+        echo '<h5>';
+	if($req['pro'] == 1)
+	{
+	    echo '<img class="mbu-info-icon mbu-info-icon-pro" src="'.MBU_IMG_URL.'/empty-star.png" title="Premium Project"></img>';
+	}
+	echo $req['title'];
+	echo ' (<span class="mbu-brainstorm-status mbu-brainstorm-status-'.$req['status'].'">'.$req['status_name'].'</span>)';
+	echo '</h5>';
 
 	echo '<div class="mbu-request-category mbu-list-info"><b>Category:</b> '.sanitize_text_field($req['category']).'</div>';
 	echo '<div class="mbu-request-tags mbu-list-info"><b>Tags:</b> '.sanitize_text_field($req['tags']).'</div>';

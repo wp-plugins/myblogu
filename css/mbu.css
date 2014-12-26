@@ -467,3 +467,16 @@ table.mbu-alerts{
     background: transparent url("../img/help2.png") left center no-repeat;
     background-size: 40px auto;
 }
+.mbu-info-icon{
+    height: 30px;
+    width:  auto;
+}
+.mbu-idea-todo-item{
+    width: 70%;
+    margin-bottom: 15px;
+    border-bottom: solid 1px #AAAAAA;
+}
+
+#dashboard-widgets .mbu-input-wrap{
+    margin-bottom: 10px;
+}

@@ -68,6 +68,9 @@ if ( is_admin() ){
             wp_register_script('pretty_photo', MBU_PLUGIN_URL.'/js/pretty_photo/js/jquery.prettyPhoto.js', array('jquery') );
             wp_enqueue_script('pretty_photo');            
             
+            wp_register_script('mbu_ckeditor', MBU_PLUGIN_URL.'/js/ckrditor/ckeditor.js', array('jquery') );
+            wp_enqueue_script('mbu_ckeditor');
+            
             wp_register_script('base64', MBU_PLUGIN_URL.'/js/base64.js');
             wp_enqueue_script('base64');
 	 }
@@ -76,6 +79,7 @@ if ( is_admin() ){
             wp_enqueue_style('mbu-style', MBU_CSS_URL);
             wp_enqueue_style('pretty-photo-style', MBU_PLUGIN_URL.'/js/pretty_photo/css/prettyPhoto.css');
             wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+            wp_enqueue_style('full-glyphicons', MBU_PLUGIN_URL.'/css/full-glyphicons/css/glyphicons.css');
 	 }
     }
 }
@@ -151,9 +155,17 @@ function mbuApiProxy(){
     if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
         return;
     }
+    //var_dump(base64_decode($_REQUEST['params'])); die();
+    $params_str = base64_decode($_REQUEST['params']);
+    if(empty($params_str))
+    {
+        echo json_encode(array('err' => 'Bad Proxy Request!'));
+        die();
+    }
+    $params_str = html_entity_decode($params_str);
     
     $api_method = isset($_REQUEST['api_method']) ? trim(sanitize_text_field($_REQUEST['api_method'])) : '';
-    $params = isset($_REQUEST['params']) ? json_decode(base64_decode($_REQUEST['params']), true) : array();
+    $params = isset($_REQUEST['params']) ? json_decode($params_str, true) : array();
     $res = mbu_api(MBU_API_BASE_URL.'/'.$api_method, $params, true, $_SERVER['REQUEST_METHOD']);
     
     if(is_string($res))
@@ -264,7 +276,7 @@ function mbuPMAdminBar($wp_admin_bar){
 
 add_action('admin_bar_menu', 'mbuPMAdminBar', 150);
 
-
+    // просмотр идеи
 function mbuGetIdeaDlg(){
     
     header ( 'Content-type: application/json' );
@@ -306,6 +318,84 @@ function mbuGetIdeaDlg(){
 
 add_action('wp_ajax_mbuGetIdeaDlg', 'mbuGetIdeaDlg');
 
+    // изменение URL на котором опубликована идея
+
+function mbuGetIdeaURLDlg(){
+    
+    header ( 'Content-type: application/json' );
+    if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
+        return;
+    }
+    $res = array();
+    $id_idea = isset($_REQUEST['id_idea']) ? intval($_REQUEST['id_idea']) : 0;
+    if(empty($id_idea))
+    {
+        $res['err'] = 'Bad Request';
+        echo json_encode($res);
+        exit();        
+    }
+    
+    $data = array('action' => 'get_ideas', 'statuses' => '1', 'id_idea' => $id_idea);
+    $ret = mbu_api(MBU_API_BASE_URL.'/ideas', $data);
+    if(is_string($ret))
+    {
+        $res['err'] = $ret;
+        echo json_encode($res);
+        exit();        
+    }
+    if(empty($ret['ideas']))
+    {
+        $res['err'] = 'Idea Not Found';
+        echo json_encode($res);
+        exit();                
+    }
+    $idea = $ret['ideas'][0];
+    
+    $res['html'] = mbuRunTpl('dlg/enter_idea_url', array('idea' => $idea));
+    echo json_encode($res);
+    exit();
+}
+
+add_action('wp_ajax_mbuGetIdeaURLDlg', 'mbuGetIdeaURLDlg');
+
+
+
+function mbuGetTODOItemDlg(){
+    
+    header ( 'Content-type: application/json' );
+    if( ! current_user_can(MBU_REQUIRED_CAPABILITY)) {
+        return;
+    }
+    $res = array();
+    $id_todo = isset($_REQUEST['id_todo']) ? intval($_REQUEST['id_todo']) : 0;
+    if(empty($id_todo))
+    {
+        $res['err'] = 'Bad Request';
+        echo json_encode($res);
+        exit();        
+    }
+    
+    $data = array('action' => 'get_todo_item', 'id_todo' => $id_todo);
+    $ret = mbu_api(MBU_API_BASE_URL.'/ideas', $data);
+    if(is_string($ret))
+    {
+        $res['err'] = $ret;
+        echo json_encode($res);
+        exit();        
+    }
+    if(empty($ret['todo_item']))
+    {
+        $res['err'] = 'Idea Not Found';
+        echo json_encode($res);
+        exit();                
+    }
+    
+    $res['html'] = mbuRunTpl('dlg/show_idea_todo', array('todo' => $ret['todo_item']));
+    echo json_encode($res);
+    exit();
+}
+
+add_action('wp_ajax_mbuGetTODOItemDlg', 'mbuGetTODOItemDlg');
 
 function mbuGetInterviewPreviewDlg(){
 
@@ -479,7 +569,7 @@ function mbu_draft_to_publish($post)
 {
 	// если пост создан на основе интервью, то при публикации нужно уведомить MBU
     $id_interview = get_post_meta($post->ID, 'mbu_interview_id', true);
-    
+  
     if(!empty($id_interview))
     {
         $data = array(
@@ -516,3 +606,36 @@ function mbu_draft_to_future($post)
 }
 
 add_action( 'draft_to_future', 'mbu_draft_to_future' );
+
+
+    // регистрируем dashboard widgets
+add_action( 'wp_dashboard_setup', 'mbu_add_dashboard_widgets' );
+
+function mbu_add_dashboard_widgets()
+{
+    wp_add_dashboard_widget('mbu_widget', 'MyBlogU: Create My Own Idea for Brainstorming', 'mbu_draw_widget');
+}
+
+function mbu_draw_widget()
+{
+    if(!mbuIsInitialized())
+    {
+        return;
+    }
+    
+    $data = array('statuses' => '1', 'action' => 'get_projects');
+    $res = mbu_api(MBU_API_BASE_URL.'/article-requests', $data);
+    if(is_string($res))
+    {
+        mbuShowMessage($res, true);
+        return;        
+    }
+    
+    if(!empty($res['requests']))
+    {
+        echo mbuRunTpl('chunks/requests/idea_widget', array(
+                                            'requests' => $res['requests'],
+                                        ));
+    }
+}
+

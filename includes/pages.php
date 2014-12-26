@@ -72,6 +72,7 @@ function mbu_brainstorms_page(){
                                             'brainstorm' => $brainstorm,
                                             'categories' => $categories,
                                             'requests' => $requests,
+                                            'user_info' => mbuGetUserInfo(),
                                         ));
     }    
     else if($mbu_page == 'edit_brainstorm')
@@ -81,11 +82,9 @@ function mbu_brainstorms_page(){
         {
             mbuShowMessage('Bad Request!', true);
             return;        
-        }
-        
+        }        
         $data = array('id_request' => $id_request, 'action' => 'get_projects');
     
-        
         $res = mbu_api(MBU_API_BASE_URL.'/article-requests', $data);
         if(is_string($res))
         {
@@ -121,6 +120,7 @@ function mbu_brainstorms_page(){
         echo mbuRunTpl('active_brainstorm', array(
                                         'brainstorm' => $brainstorm,
                                         'categories' => $categories,
+                                        'user_info' => mbuGetUserInfo(),
                                         ));
     }
     else if($mbu_page == 'brainstorm_archive')

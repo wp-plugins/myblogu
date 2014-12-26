@@ -64,13 +64,16 @@
 	   foreach($question['answers'] as $answer)
 	   {
 	       echo '<div class="mbu-question-answer" id="mbu-question-answer-'.$answer['id'].'">';
-	       if($interview['status'] == 1)
+	       if($interview['status'] == 1 && $answer['id_publication']==0)
                {
                    echo '<input type="checkbox" class="mbu-answer-select-checkbox" class="mbu-answer-select-checkbox" data-id-answer="'.$answer['id'].'" id="mbu-answer-select-checkbox-'.$answer['id'].'" '.(($answer['status'] == 1) ? 'checked="checked"': '').'></input>';
                }
 	       echo '<img src="'.$answer['interviewee']['headshot_url'].'" style="height: 30px; width: auto;" />';
 	       echo '<a class="mbu-answer-author" href="'.$answer['interviewee']['author_url'].'" target="_blank">'.$answer['interviewee']['author_name'].'</a> <i>('.$answer['interviewee']['author_title'].')</i>';
-
+	       if(!empty($answer['url']))
+	       {
+	           echo '<p>Published on: <a target="_blank" href="'.$answer['url'].'">'.$answer['url'].'</a></p>';
+	       }
 	       echo '<div class="mbu-answer-text">'.$answer['answer'].'</div>';
 	       echo '</div>';
 	   }
