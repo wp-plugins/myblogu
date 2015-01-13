@@ -19,7 +19,7 @@
         echo '<div class="mbu-context-menu">';
         if($req['ideas_count'] > 0)
         {
-            echo '<a href="'.admin_url('admin.php?page=mbu_brainstorms&mbu_page=brainstorm&id_request='.$req['id']).'#mbu-ideas" class="mbu-btn mbu-blue-btn">show ideas</a>';
+            echo '<a href="'.admin_url('admin.php?page=mbu_brainstorms&mbu_page=brainstorm&id_request='.$req['id']).'&new_ideas=1#mbu-ideas" class="mbu-btn mbu-blue-btn">show ideas</a>';
         }
 	if($req['status'] == 0 || $req['status'] == 99)
 	{

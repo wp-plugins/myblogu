@@ -3,12 +3,12 @@
 	Plugin Name: MyBlogU
 	Plugin URI: http://myblogu.com
 	Description:  <strong>MyBlogU official plugin</strong>
-	Version: 0.0.3
+	Version: 0.0.4
 	Author:  Michael Tikhonin (MyBlogU)
 	Author URI: http://phpclimber.com
 	License: GPL2
 
-    Copyright 2013  MyBlogU  (info@myblogu.com)
+    Copyright 2015  MyBlogU  (info@myblogu.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -25,8 +25,8 @@
 */
 
 
-define( 'MBU_VERSION', '0.0.1' );
-//define( 'MBU_TEST_ENV', 1);         // comment this line on production
+//define( 'MBU_VERSION', '0.0.4' );
+define( 'MBU_TEST_ENV', 1);         // comment this line on production
 
 define('MBU_DISPLAY_NAME', 'MyBlogU');
 define( 'MBU_REQUIRED_WP_VERSION', '3.2' );

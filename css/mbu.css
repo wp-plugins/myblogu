@@ -168,12 +168,11 @@ border: 1px solid #000000;
 margin-bottom: 20px;
 padding: 20px 10px;    
 }
-.mbu-brainstorm-status, .mbu-interview-status{
+.mbu-brainstorm-status, .mbu-interview-status, .mbu-idea-status-name{
     font-style: italic;
-    color: #666666;
 }
 .mbu-brainstorm-status-0, .mbu-interview-status-0, .mbu-idea-status-name-0{
-    color: #666666;
+    color: #d54e21;
 }
 .mbu-brainstorm-status-1, .mbu-interview-status-1, .mbu-idea-status-name-1{
     color: #78e822;
@@ -479,4 +478,12 @@ table.mbu-alerts{
 
 #dashboard-widgets .mbu-input-wrap{
     margin-bottom: 10px;
+}
+
+.mbu-init-msg{
+    background-color: #56A858;
+    padding: 3px 5px;
+    margin: 5px 0px;
+    color: #FFFFFF;
+    font-weight: 900;
 }

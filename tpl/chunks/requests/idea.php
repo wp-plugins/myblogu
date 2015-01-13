@@ -14,7 +14,7 @@
 	}
     ?>
 	
-    <?php echo sanitize_text_field($idea['title']); ?> (<span class="mbu-idea-status-name-<?php echo $idea['status'] ?>"><?php echo $idea['status_name'] ?></span>)
+    <?php echo sanitize_text_field($idea['title']); ?> (<span class="mbu-idea-status-name-<?php echo $idea['status'] ?> mbu-idea-status-name"><?php echo $idea['status_name'] ?></span>)
     </h5>
 
 <?php 
@@ -89,7 +89,7 @@
     }
     if($idea['status'] == 1)
     {
-        echo '<a href="" class="mbu-btn mbu-blue-btn" onclick="mbu.saveIdeaURL('.$idea['id'].'); return false;">save URL</a>';
+        echo '<a href="" class="mbu-btn mbu-blue-btn" onclick="mbu.saveIdeaURL('.$idea['id'].'); return false;">'.((empty($idea['link'])) ? 'save URL' : 'change URL').'</a>';
     }
 ?>
     </div>

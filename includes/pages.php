@@ -167,9 +167,10 @@ function mbu_brainstorms_page(){
             mbuShowMessage('Project Not Found', true);
             return;                    
         }
-
+        
+        $statuses = (empty($_REQUEST['new_ideas'])) ? '0,1' : '0,';
             // получаем идеи
-        $data = array('action' => 'get_ideas', 'statuses' => '0,1');
+        $data = array('action' => 'get_ideas', 'statuses' => $statuses);
         $res = mbu_api(MBU_API_BASE_URL.'/ideas', $data);
         if(is_string($res))
         {
@@ -179,7 +180,8 @@ function mbu_brainstorms_page(){
 
         $brainstorm['ideas'] = $res['ideas'];
         echo mbuRunTpl('brainstorm', array(
-                                    'brainstorm' => $brainstorm,
+                                        'brainstorm' => $brainstorm,
+                                        'new_ideas'  => ((!empty($_REQUEST['new_ideas'])) ? intval($_REQUEST['new_ideas']) : 0),
                                     ));        
     }
     else if($mbu_page == 'ideas')

@@ -60,6 +60,12 @@ Non-logged-in users will be able to see your request and the associated site but
 </table>
 </form>
 
+
+<div class="mbu-menu">
+   <a href="<?php echo admin_url('admin.php?page=mbu_brainstorms&mbu_page=brainstorm&id_request='.$brainstorm['id'].'&new_ideas=1#mbu-ideas'); ?>" class="mbu-btn <?php echo (($new_ideas == 1) ? 'mbu-blue-btn' : 'mbu-orange-btn'); ?>">New Ideas</a>
+   <a href="<?php echo admin_url('admin.php?page=mbu_brainstorms&mbu_page=brainstorm&id_request='.$brainstorm['id'].'&new_ideas=0#mbu-ideas'); ?>" class="mbu-btn <?php echo (($new_ideas == 0) ? 'mbu-blue-btn' : 'mbu-orange-btn'); ?>">All Ideas</a>
+</div>
+
 <?php 
     if(!empty($brainstorm['ideas']))
     {

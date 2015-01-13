@@ -124,6 +124,10 @@ function mbuShowMessage($message, $errormsg = false)
 
 function mbuShowAdminMessages()
 {
+    if(defined('MBU_TEST_ENV'))
+    {
+        mbuShowMessage('Connected to TEST server', true);
+    }
     if(mbuIsInitialized())
     {
         $expire = mbuGetOption('expire', 0);
@@ -144,7 +148,10 @@ function mbuShowAdminMessages()
     {
         if(!isset($_REQUEST['page']) || $_REQUEST['page'] != 'mbu-main-menu')
         {
-            mbuShowMessage('Please <a href="'.get_admin_url().'admin.php?page=mbu-main-menu'.'">init</a> MBU connection', true);
+            //mbuShowMessage('Please <a href="'.get_admin_url().'admin.php?page=mbu-main-menu'.'">init</a> MBU connection', true);
+            echo '<div class="mbu-init-msg">';
+            echo 'You\'ve installed MyBlogU plugin for WordPress! Now you can <a class="mbu-btn mbu-blue-btn" href="'.get_admin_url().'admin.php?page=mbu-main-menu'.'">connect</a> to MyBlogU';
+            echo '</div>';
         }
     }
 }
