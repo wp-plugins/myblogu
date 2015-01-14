@@ -3,7 +3,7 @@
 	Plugin Name: MyBlogU
 	Plugin URI: http://myblogu.com
 	Description:  <strong>MyBlogU official plugin</strong>
-	Version: 0.0.4
+	Version: 0.0.5
 	Author:  Michael Tikhonin (MyBlogU)
 	Author URI: http://phpclimber.com
 	License: GPL2
@@ -25,8 +25,8 @@
 */
 
 
-//define( 'MBU_VERSION', '0.0.4' );
-define( 'MBU_TEST_ENV', 1);         // comment this line on production
+define( 'MBU_VERSION', '0.0.5' );
+//define( 'MBU_TEST_ENV', 1);         // comment this line on production
 
 define('MBU_DISPLAY_NAME', 'MyBlogU');
 define( 'MBU_REQUIRED_WP_VERSION', '3.2' );
