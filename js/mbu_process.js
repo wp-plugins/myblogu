@@ -410,8 +410,8 @@ connectAccount : function(){
         }
 
         var url = mbu_script_data.mbu_url+'/api/oauth' +
-		'?username=' + username +
-		'&password=' + password +
+		'?username=' + encodeURIComponent(username) +
+		'&password=' + encodeURIComponent(password) +
                 '&blog_name=' + encodeURIComponent(mbu_script_data.blog_title) +
                 '&blog_url=' + encodeURIComponent(mbu_script_data.blog_url) +
                 '&blog_tags=' + encodeURIComponent(mbu.tags) +
