@@ -25,7 +25,7 @@
 */
 
 
-define( 'MBU_VERSION', '0.0.6' );
+define( 'MBU_VERSION', '0.0.7' );
 //define( 'MBU_TEST_ENV', 1);         // comment this line on production
 
 define('MBU_DISPLAY_NAME', 'MyBlogU');

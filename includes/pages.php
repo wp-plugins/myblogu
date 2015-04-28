@@ -24,6 +24,7 @@ function mbu_settings_page(){
                                           'user_info' => $user_info, 
                                           'tags' => $tags,
                                           'todo' => get_option('mbu_todo'),
+                                          'expire' => mbuGetOption('expire', 0),
                                          ));
 }
 

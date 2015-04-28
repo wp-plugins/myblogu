@@ -133,8 +133,11 @@
 ?>
 
 
-<div style="width: 100%; clear: both;"><button class="mbu-btn mbu-gray-btn" onclick="jQuery('#mbu-advanced-options').toggle(500)">Advanced options</button></div>
-<div style="width: 60%; display: none;" id="mbu-advanced-options">
+<div style="width: 100%; clear: both; margin: 15px;">
+    <button class="mbu-btn mbu-gray-btn" onclick="jQuery('#mbu-advanced-options').toggle(500)">Advanced options</button>
+</div>
+
+<div style="width: 60%; <?php if($expire > time()) echo 'display: none;'; ?>" id="mbu-advanced-options">
     <div>
     <div class="postbox-container" >
 
