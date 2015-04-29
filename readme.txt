@@ -3,7 +3,7 @@ Contributors: MyBlogGuest
 Donate link: http://myblogu.com/
 Tags: blogging, free content, infographics, promote infographics, free infographics, content marketing, content for my blog, free articles, guest articles, creativity, inspiration, community, myblogu, collaboration, crowd source, write for us, looking for contributors, productivity, gtd, expert interviews, quotes, writing help, free tools
 Requires at least: 3.0.1
-Tested up to: 4.0
+Tested up to: 4.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
